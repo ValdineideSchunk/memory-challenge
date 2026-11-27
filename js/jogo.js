@@ -1,23 +1,31 @@
 
 'use strict';
 
-// Configuração dos níveis de dificuldade.
+// ========================================
+// CONFIGURAÇÃO DOS NÍVEIS
+// ========================================
+
 const niveis = {
   iniciante: {
     nome: 'Iniciante',
     pares: 6
   },
+
   intermediario: {
     nome: 'Intermediário',
     pares: 8
   },
+
   especialista: {
     nome: 'Especialista',
     pares: 12
   }
 };
 
-// Símbolos utilizados nas cartas.
+// ========================================
+// SÍMBOLOS DAS CARTAS
+// ========================================
+
 const simbolos = [
   '◆', '●', '▲', '★', '♥', '✿',
   '☀', '♫', '☂', '☕', '♣', '♦'
@@ -26,26 +34,37 @@ const simbolos = [
 // Chave utilizada para armazenar os recordes.
 const CHAVE_RECORDES = 'memoryChallengeRecordes';
 
-// Estado central da partida.
+// ========================================
+// ESTADO CENTRAL DO JOGO
+// ========================================
+
 const estadoJogo = {
   cartas: [],
   cartasViradas: [],
+
   paresEncontrados: 0,
   jogadas: 0,
   segundos: 0,
+
   intervalo: null,
   temporizadorVirada: null,
+
   bloqueado: false,
   iniciado: false,
+
   nivelAtual: 'iniciante',
   novoRecorde: false
 };
 
-// Elementos HTML utilizados pelo JavaScript.
+// ========================================
+// ELEMENTOS HTML
+// ========================================
+
 const elementos = {
   telaInicial: document.querySelector('#tela-inicial'),
   areaPartida: document.querySelector('#area-partida'),
   telaFinal: document.querySelector('#tela-final'),
+
   tabuleiro: document.querySelector('#tabuleiro'),
 
   tempo: document.querySelector('#tempo'),
@@ -57,7 +76,6 @@ const elementos = {
   barraProgresso: document.querySelector('#barra-progresso'),
 
   status: document.querySelector('#status-partida'),
-  selecaoNivel: document.querySelector('#selecao-nivel'),
 
   nomeNivelPartida: document.querySelector('#nome-nivel-partida'),
   quantidadePares: document.querySelector('#quantidade-pares'),
@@ -70,17 +88,36 @@ const elementos = {
   descricaoResultado: document.querySelector('#descricao-resultado'),
   nivelResultado: document.querySelector('#nivel-resultado'),
 
+  botoesNivel: document.querySelectorAll('.opcao-nivel'),
+
   botaoIniciar: document.querySelector('#botao-iniciar'),
   botaoReiniciar: document.querySelector('#botao-reiniciar'),
   botaoJogarNovamente: document.querySelector('#botao-jogar-novamente'),
-  botaoVoltarInicio: document.querySelector('#botao-voltar-inicio')
+  botaoVoltarInicio: document.querySelector('#botao-voltar-inicio'),
+  botaoVoltarMenu: document.querySelector('#botao-voltar-menu')
 };
+
+// ========================================
+// ARMAZENAMENTO DOS RECORDES
+// ========================================
 
 // Recupera os recordes armazenados no navegador.
 function carregarRecordes() {
   try {
-    return JSON.parse(localStorage.getItem(CHAVE_RECORDES)) || {};
+    const dados = localStorage.getItem(CHAVE_RECORDES);
+
+    if (!dados) {
+      return {};
+    }
+
+    const recordes = JSON.parse(dados);
+
+    return recordes && typeof recordes === 'object'
+      ? recordes
+      : {};
+
   } catch (erro) {
+    console.error('Erro ao carregar recordes:', erro);
     return {};
   }
 }
@@ -88,10 +125,20 @@ function carregarRecordes() {
 // Salva os recordes no localStorage.
 function salvarRecordes(recordes) {
   try {
-    localStorage.setItem(CHAVE_RECORDES, JSON.stringify(recordes));
+    localStorage.setItem(
+      CHAVE_RECORDES,
+      JSON.stringify(recordes)
+    );
+
+    return true;
+
   } catch (erro) {
+    console.error('Erro ao salvar recordes:', erro);
+
     elementos.status.textContent =
       'Não foi possível salvar o recorde neste navegador.';
+
+    return false;
   }
 }
 
@@ -104,19 +151,59 @@ function atualizarRecordesNaTela() {
       `#recorde-${chaveNivel}`
     );
 
+    if (!elementoRecorde) {
+      return;
+    }
+
     const tempoRecorde = recordes[chaveNivel];
 
-    elementoRecorde.textContent = Number.isInteger(tempoRecorde)
-      ? formatarTempo(tempoRecorde)
-      : '--:--';
+    elementoRecorde.textContent =
+      Number.isInteger(tempoRecorde) && tempoRecorde >= 0
+        ? formatarTempo(tempoRecorde)
+        : '--:--';
   });
 }
 
-// Embaralha as cartas utilizando o algoritmo Fisher-Yates.
-function embaralharCartas() {
-  const quantidadePares = niveis[estadoJogo.nivelAtual].pares;
+// ========================================
+// SELEÇÃO DOS NÍVEIS
+// ========================================
 
-  const simbolosDoNivel = simbolos.slice(0, quantidadePares);
+function selecionarNivel(nivelSelecionado) {
+  if (!niveis[nivelSelecionado]) {
+    return;
+  }
+
+  // Atualiza o nível atual.
+  estadoJogo.nivelAtual = nivelSelecionado;
+
+  // Atualiza o destaque visual dos botões.
+  elementos.botoesNivel.forEach((botao) => {
+    const selecionado =
+      botao.dataset.nivel === nivelSelecionado;
+
+    botao.classList.toggle(
+      'selecionado',
+      selecionado
+    );
+
+    botao.setAttribute(
+      'aria-pressed',
+      String(selecionado)
+    );
+  });
+}
+
+// ========================================
+// EMBARALHAMENTO DAS CARTAS
+// ========================================
+
+// Embaralha as cartas utilizando Fisher-Yates.
+function embaralharCartas() {
+  const quantidadePares =
+    niveis[estadoJogo.nivelAtual].pares;
+
+  const simbolosDoNivel =
+    simbolos.slice(0, quantidadePares);
 
   const cartasEmbaralhadas = [
     ...simbolosDoNivel,
@@ -148,6 +235,10 @@ function embaralharCartas() {
   }));
 }
 
+// ========================================
+// CRONÔMETRO
+// ========================================
+
 // Converte segundos para o formato MM:SS.
 function formatarTempo(segundos) {
   const minutos = Math.floor(segundos / 60)
@@ -166,6 +257,10 @@ function iniciarCronometro() {
   clearInterval(estadoJogo.intervalo);
 
   estadoJogo.intervalo = setInterval(() => {
+    if (!estadoJogo.iniciado) {
+      return;
+    }
+
     estadoJogo.segundos++;
 
     elementos.tempo.textContent =
@@ -174,11 +269,23 @@ function iniciarCronometro() {
   }, 1000);
 }
 
-// Atualiza os indicadores da partida.
-function atualizarIndicadores() {
-  const totalPares = niveis[estadoJogo.nivelAtual].pares;
+// Interrompe o cronômetro.
+function pararCronometro() {
+  clearInterval(estadoJogo.intervalo);
 
-  elementos.jogadas.textContent = estadoJogo.jogadas;
+  estadoJogo.intervalo = null;
+}
+
+// ========================================
+// INDICADORES DA PARTIDA
+// ========================================
+
+function atualizarIndicadores() {
+  const totalPares =
+    niveis[estadoJogo.nivelAtual].pares;
+
+  elementos.jogadas.textContent =
+    estadoJogo.jogadas;
 
   elementos.pares.textContent =
     `${estadoJogo.paresEncontrados}/${totalPares}`;
@@ -203,7 +310,10 @@ function atualizarIndicadores() {
   );
 }
 
-// Cria as cartas dinamicamente no HTML.
+// ========================================
+// RENDERIZAÇÃO DO TABULEIRO
+// ========================================
+
 function renderizarTabuleiro() {
   elementos.tabuleiro.textContent = '';
 
@@ -216,6 +326,7 @@ function renderizarTabuleiro() {
     const botaoCarta = document.createElement('button');
 
     botaoCarta.type = 'button';
+
     botaoCarta.classList.add('carta');
 
     botaoCarta.dataset.id = carta.id;
@@ -233,14 +344,21 @@ function renderizarTabuleiro() {
   });
 }
 
-// Inicia ou reinicia uma partida.
+// ========================================
+// INICIAR OU REINICIAR PARTIDA
+// ========================================
+
 function iniciarPartida() {
-  clearInterval(estadoJogo.intervalo);
+  // Interrompe temporizadores anteriores.
+  pararCronometro();
+
   clearTimeout(estadoJogo.temporizadorVirada);
 
-  estadoJogo.nivelAtual = elementos.selecaoNivel.value;
+  estadoJogo.temporizadorVirada = null;
 
+  // Reseta os dados da partida.
   estadoJogo.cartas = embaralharCartas();
+
   estadoJogo.cartasViradas = [];
 
   estadoJogo.paresEncontrados = 0;
@@ -253,26 +371,41 @@ function iniciarPartida() {
 
   const nivel = niveis[estadoJogo.nivelAtual];
 
+  // Atualiza informações do nível.
   elementos.nomeNivelPartida.textContent =
     `Nível ${nivel.nome.toLowerCase()}`;
 
   elementos.quantidadePares.textContent =
     `${nivel.pares} pares`;
 
+  // Atualiza a visibilidade das telas.
   elementos.telaInicial.hidden = true;
   elementos.telaFinal.hidden = true;
   elementos.areaPartida.hidden = false;
 
-  elementos.status.textContent = 'Partida em andamento';
+  elementos.status.textContent =
+    'Partida em andamento';
 
+  // Atualiza indicadores e tabuleiro.
   atualizarIndicadores();
+
   renderizarTabuleiro();
+
+  // Inicia o cronômetro.
   iniciarCronometro();
 }
 
-// Vira uma carta selecionada pelo jogador.
+// ========================================
+// VIRAR CARTAS
+// ========================================
+
 function virarCarta(idCarta) {
-  if (estadoJogo.bloqueado || !estadoJogo.iniciado) {
+
+  // Impede jogadas durante comparações ou partidas encerradas.
+  if (
+    estadoJogo.bloqueado ||
+    !estadoJogo.iniciado
+  ) {
     return;
   }
 
@@ -280,10 +413,12 @@ function virarCarta(idCarta) {
     (carta) => carta.id === idCarta
   );
 
+  // Impede selecionar cartas inexistentes ou encontradas.
   if (!cartaSelecionada || cartaSelecionada.encontrada) {
     return;
   }
 
+  // Impede selecionar a mesma carta duas vezes.
   if (
     estadoJogo.cartasViradas.some(
       (carta) => carta.id === idCarta
@@ -296,7 +431,13 @@ function virarCarta(idCarta) {
     `[data-id="${idCarta}"]`
   );
 
-  botaoCarta.textContent = cartaSelecionada.simbolo;
+  if (!botaoCarta) {
+    return;
+  }
+
+  // Revela o símbolo.
+  botaoCarta.textContent =
+    cartaSelecionada.simbolo;
 
   botaoCarta.classList.add('virada');
 
@@ -307,32 +448,50 @@ function virarCarta(idCarta) {
 
   estadoJogo.cartasViradas.push(cartaSelecionada);
 
+  // Quando duas cartas são viradas, verifica o resultado.
   if (estadoJogo.cartasViradas.length === 2) {
     estadoJogo.jogadas++;
 
     atualizarIndicadores();
+
     verificarPar();
   }
 }
 
-// Verifica se as duas cartas selecionadas são iguais.
+// ========================================
+// VERIFICAR PARES
+// ========================================
+
 function verificarPar() {
   const [
     primeiraCarta,
     segundaCarta
   ] = estadoJogo.cartasViradas;
 
+  // Verifica se os símbolos são iguais.
   if (primeiraCarta.simbolo === segundaCarta.simbolo) {
-    marcarParEncontrado(primeiraCarta, segundaCarta);
+    marcarParEncontrado(
+      primeiraCarta,
+      segundaCarta
+    );
+
     return;
   }
 
+  // Bloqueia novas jogadas durante a comparação.
   estadoJogo.bloqueado = true;
 
   elementos.status.textContent =
     'Não foi dessa vez. Tente novamente!';
 
+  // Aguarda antes de esconder as cartas.
   estadoJogo.temporizadorVirada = setTimeout(() => {
+
+    // Confirma se a partida ainda está ativa.
+    if (!estadoJogo.iniciado) {
+      return;
+    }
+
     esconderCartas();
 
     estadoJogo.bloqueado = false;
@@ -345,19 +504,29 @@ function verificarPar() {
   }, 850);
 }
 
-// Registra um par encontrado.
+// ========================================
+// REGISTRAR PAR ENCONTRADO
+// ========================================
+
 function marcarParEncontrado(primeiraCarta, segundaCarta) {
+
   primeiraCarta.encontrada = true;
   segundaCarta.encontrada = true;
 
   estadoJogo.paresEncontrados++;
 
   [primeiraCarta, segundaCarta].forEach((carta) => {
+
     const botao = elementos.tabuleiro.querySelector(
       `[data-id="${carta.id}"]`
     );
 
+    if (!botao) {
+      return;
+    }
+
     botao.classList.remove('virada');
+
     botao.classList.add('encontrada');
 
     botao.disabled = true;
@@ -372,6 +541,7 @@ function marcarParEncontrado(primeiraCarta, segundaCarta) {
 
   atualizarIndicadores();
 
+  // Verifica se todos os pares foram encontrados.
   if (
     estadoJogo.paresEncontrados ===
     niveis[estadoJogo.nivelAtual].pares
@@ -380,12 +550,20 @@ function marcarParEncontrado(primeiraCarta, segundaCarta) {
   }
 }
 
-// Esconde as cartas quando os símbolos são diferentes.
+// ========================================
+// ESCONDER CARTAS
+// ========================================
+
 function esconderCartas() {
   estadoJogo.cartasViradas.forEach((carta) => {
+
     const botao = elementos.tabuleiro.querySelector(
       `[data-id="${carta.id}"]`
     );
+
+    if (!botao) {
+      return;
+    }
 
     botao.textContent = '';
 
@@ -400,19 +578,31 @@ function esconderCartas() {
   estadoJogo.cartasViradas = [];
 }
 
-// Finaliza a partida e verifica o recorde.
+// ========================================
+// FINALIZAR PARTIDA
+// ========================================
+
 function finalizarPartida() {
+
   estadoJogo.iniciado = false;
 
-  clearInterval(estadoJogo.intervalo);
+  estadoJogo.bloqueado = false;
+
+  pararCronometro();
+
+  clearTimeout(estadoJogo.temporizadorVirada);
+
+  estadoJogo.temporizadorVirada = null;
 
   const recordes = carregarRecordes();
 
   const recordeAnterior =
     recordes[estadoJogo.nivelAtual];
 
+  // Verifica se o jogador conseguiu um novo recorde.
   estadoJogo.novoRecorde =
     !Number.isInteger(recordeAnterior) ||
+    recordeAnterior < 0 ||
     estadoJogo.segundos < recordeAnterior;
 
   if (estadoJogo.novoRecorde) {
@@ -422,14 +612,19 @@ function finalizarPartida() {
     salvarRecordes(recordes);
   }
 
+  // Atualiza os resultados.
   elementos.resultadoTempo.textContent =
     formatarTempo(estadoJogo.segundos);
 
   elementos.resultadoJogadas.textContent =
     estadoJogo.jogadas;
 
+  const melhorTempo = recordes[estadoJogo.nivelAtual];
+
   elementos.resultadoRecorde.textContent =
-    formatarTempo(recordes[estadoJogo.nivelAtual]);
+    Number.isInteger(melhorTempo)
+      ? formatarTempo(melhorTempo)
+      : '--:--';
 
   elementos.mensagemRecorde.textContent =
     estadoJogo.novoRecorde
@@ -444,7 +639,9 @@ function finalizarPartida() {
   elementos.nivelResultado.textContent =
     `Nível ${niveis[estadoJogo.nivelAtual].nome}`;
 
+  // Exibe a tela final.
   elementos.areaPartida.hidden = true;
+
   elementos.telaFinal.hidden = false;
 
   elementos.status.textContent =
@@ -453,49 +650,98 @@ function finalizarPartida() {
   atualizarRecordesNaTela();
 }
 
-// Volta para a tela inicial sem apagar os recordes.
+// ========================================
+// VOLTAR AO MENU INICIAL
+// ========================================
+
 function voltarParaInicio() {
-  clearInterval(estadoJogo.intervalo);
+
+  // Interrompe o cronômetro.
+  pararCronometro();
+
+  // Cancela qualquer comparação pendente.
   clearTimeout(estadoJogo.temporizadorVirada);
 
+  estadoJogo.temporizadorVirada = null;
+
+  // Finaliza a partida atual.
   estadoJogo.iniciado = false;
+
   estadoJogo.bloqueado = false;
 
+  estadoJogo.cartasViradas = [];
+
+  // Limpa o tabuleiro.
+  elementos.tabuleiro.textContent = '';
+
+  // Retorna à tela inicial.
   elementos.areaPartida.hidden = true;
+
   elementos.telaFinal.hidden = true;
+
   elementos.telaInicial.hidden = false;
 
   elementos.status.textContent =
     'Pronto para jogar?';
 
+  // Atualiza os recordes sem apagá-los.
   atualizarRecordesNaTela();
 }
 
-// Eventos dos botões e controles.
+// ========================================
+// EVENTOS DOS BOTÕES
+// ========================================
+
+// Iniciar partida.
 elementos.botaoIniciar.addEventListener(
   'click',
   iniciarPartida
 );
 
+// Reiniciar partida mantendo o nível selecionado.
 elementos.botaoReiniciar.addEventListener(
   'click',
   iniciarPartida
 );
 
+// Jogar novamente mantendo o nível selecionado.
 elementos.botaoJogarNovamente.addEventListener(
   'click',
   iniciarPartida
 );
 
+// Voltar ao menu pela tela de resultado.
 elementos.botaoVoltarInicio.addEventListener(
   'click',
   voltarParaInicio
 );
 
-elementos.selecaoNivel.addEventListener(
-  'change',
-  atualizarRecordesNaTela
+// Voltar ao menu durante a partida.
+elementos.botaoVoltarMenu.addEventListener(
+  'click',
+  voltarParaInicio
 );
 
-// Carrega os recordes quando a página é aberta.
+// ========================================
+// EVENTOS DE SELEÇÃO DOS NÍVEIS
+// ========================================
+
+elementos.botoesNivel.forEach((botao) => {
+
+  botao.addEventListener('click', () => {
+
+    selecionarNivel(botao.dataset.nivel);
+
+  });
+
+});
+
+// ========================================
+// INICIALIZAÇÃO DO JOGO
+// ========================================
+
+// Define o nível inicial.
+selecionarNivel('iniciante');
+
+// Carrega os recordes salvos.
 atualizarRecordesNaTela();

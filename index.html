@@ -9,27 +9,34 @@
   <link rel="stylesheet" href="css/estilo.css">
   <script src="js/jogo.js" defer></script>
 </head>
+
 <body>
   <main class="app">
 
+    <!-- CABEÇALHO -->
     <header class="topo">
       <a class="marca" href="index.html" aria-label="Memory Challenge - início">
         <span class="marca-icone" aria-hidden="true">✦</span>
         <span>memory<span class="marca-destaque">challenge</span></span>
       </a>
+
       <span class="etiqueta">JOGO DA MEMÓRIA</span>
     </header>
 
     <section class="painel" aria-labelledby="titulo-principal">
 
+      <!-- APRESENTAÇÃO -->
       <div class="cabecalho-jogo">
         <div>
           <p class="sobretitulo">TREINE SUA MEMÓRIA</p>
+
           <h1 id="titulo-principal">Encontre os pares.</h1>
+
           <p class="descricao" id="descricao-jogo">
             Escolha uma dificuldade, vire as cartas e encontre todas as combinações no menor tempo possível.
           </p>
         </div>
+
         <div class="status-partida" id="status-partida" aria-live="polite">
           Pronto para jogar?
         </div>
@@ -51,20 +58,56 @@
           Cada dificuldade possui seu próprio recorde.
         </p>
 
+        <!-- SELEÇÃO DOS NÍVEIS -->
         <div class="seletor-nivel">
-          <label for="selecao-nivel">Nível de dificuldade</label>
 
-          <select id="selecao-nivel">
-            <option value="iniciante">Iniciante — 6 pares</option>
-            <option value="intermediario">Intermediário — 8 pares</option>
-            <option value="especialista">Especialista — 12 pares</option>
-          </select>
+          <label>Escolha a dificuldade</label>
+
+          <div class="opcoes-nivel">
+
+            <button
+              class="opcao-nivel selecionado"
+              type="button"
+              data-nivel="iniciante"
+              aria-pressed="true"
+            >
+              <span class="nivel-icone" aria-hidden="true">✦</span>
+              <strong>Iniciante</strong>
+              <small>6 pares</small>
+            </button>
+
+            <button
+              class="opcao-nivel"
+              type="button"
+              data-nivel="intermediario"
+              aria-pressed="false"
+            >
+              <span class="nivel-icone" aria-hidden="true">◆</span>
+              <strong>Intermediário</strong>
+              <small>8 pares</small>
+            </button>
+
+            <button
+              class="opcao-nivel"
+              type="button"
+              data-nivel="especialista"
+              aria-pressed="false"
+            >
+              <span class="nivel-icone" aria-hidden="true">★</span>
+              <strong>Especialista</strong>
+              <small>12 pares</small>
+            </button>
+
+          </div>
         </div>
 
+        <!-- RECORDES -->
         <div class="recordes-iniciais">
+
           <h3>Seus recordes</h3>
 
           <div class="lista-recordes">
+
             <div class="recorde-item">
               <span>Iniciante</span>
               <strong id="recorde-iniciante">--:--</strong>
@@ -79,10 +122,16 @@
               <span>Especialista</span>
               <strong id="recorde-especialista">--:--</strong>
             </div>
+
           </div>
         </div>
 
-        <button class="botao botao-principal" id="botao-iniciar" type="button">
+        <!-- INICIAR PARTIDA -->
+        <button
+          class="botao botao-principal"
+          id="botao-iniciar"
+          type="button"
+        >
           Iniciar partida <span aria-hidden="true">→</span>
         </button>
 
@@ -91,15 +140,18 @@
       <!-- TELA DA PARTIDA -->
       <section class="area-partida" id="area-partida" hidden>
 
+        <!-- NÍVEL ATUAL -->
         <div class="nivel-partida">
           <span id="nome-nivel-partida">Nível iniciante</span>
           <span id="quantidade-pares">6 pares</span>
         </div>
 
+        <!-- INDICADORES -->
         <div class="indicadores">
 
           <div class="indicador">
-            <span class="indicador-icone">◷</span>
+            <span class="indicador-icone" aria-hidden="true">◷</span>
+
             <div>
               <span class="indicador-label">TEMPO</span>
               <strong id="tempo">00:00</strong>
@@ -107,7 +159,8 @@
           </div>
 
           <div class="indicador">
-            <span class="indicador-icone">↗</span>
+            <span class="indicador-icone" aria-hidden="true">↗</span>
+
             <div>
               <span class="indicador-label">JOGADAS</span>
               <strong id="jogadas">0</strong>
@@ -115,7 +168,8 @@
           </div>
 
           <div class="indicador">
-            <span class="indicador-icone">✦</span>
+            <span class="indicador-icone" aria-hidden="true">✦</span>
+
             <div>
               <span class="indicador-label">PARES</span>
               <strong id="pares">0/6</strong>
@@ -124,6 +178,7 @@
 
         </div>
 
+        <!-- PROGRESSO -->
         <div class="progresso-cabecalho">
           <span>Seu progresso</span>
           <span id="texto-progresso">0 de 6 pares</span>
@@ -141,21 +196,49 @@
           <div id="progresso"></div>
         </div>
 
-        <div class="tabuleiro" id="tabuleiro" aria-label="Tabuleiro do jogo da memória">
+        <!-- TABULEIRO -->
+        <div
+          class="tabuleiro"
+          id="tabuleiro"
+          aria-label="Tabuleiro do jogo da memória"
+        >
         </div>
 
+        <!-- AÇÕES DA PARTIDA -->
         <div class="acoes-partida">
+
           <span>Encontre todos os pares para concluir o desafio.</span>
 
-          <button class="botao-secundario" id="botao-reiniciar" type="button">
-            ↻ Reiniciar
-          </button>
+          <div class="botoes-partida">
+
+            <button
+              class="botao-secundario"
+              id="botao-reiniciar"
+              type="button"
+            >
+              ↻ Reiniciar
+            </button>
+
+            <button
+              class="botao-secundario"
+              id="botao-voltar-menu"
+              type="button"
+            >
+              ⌂ Menu inicial
+            </button>
+
+          </div>
         </div>
 
       </section>
 
       <!-- TELA FINAL -->
-      <section class="tela-final" id="tela-final" hidden aria-live="polite">
+      <section
+        class="tela-final"
+        id="tela-final"
+        hidden
+        aria-live="polite"
+      >
 
         <div class="icone-vitoria" aria-hidden="true">✦</div>
 
@@ -169,6 +252,7 @@
           Todos os pares foram encontrados. Confira seu desempenho:
         </p>
 
+        <!-- RESULTADO -->
         <div class="resultado-final">
 
           <div>
@@ -192,11 +276,21 @@
           Nível iniciante
         </p>
 
-        <button class="botao botao-principal" id="botao-jogar-novamente" type="button">
+        <!-- JOGAR NOVAMENTE -->
+        <button
+          class="botao botao-principal"
+          id="botao-jogar-novamente"
+          type="button"
+        >
           Jogar novamente <span aria-hidden="true">→</span>
         </button>
 
-        <button class="botao-secundario botao-voltar" id="botao-voltar-inicio" type="button">
+        <!-- VOLTAR AO MENU -->
+        <button
+          class="botao-secundario botao-voltar"
+          id="botao-voltar-inicio"
+          type="button"
+        >
           Voltar à tela inicial
         </button>
 
@@ -204,6 +298,7 @@
 
     </section>
 
+    <!-- RODAPÉ -->
     <footer>
       Desenvolvido para a disciplina de Desenvolvimento Web · C3
     </footer>
