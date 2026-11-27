@@ -1,25 +1,53 @@
+
 # Memory Challenge
 
-Jogo da memória desenvolvido para a avaliação C3 da disciplina Desenvolvimento Web.
+Jogo da memória desenvolvido para a avaliação C3 da disciplina de Desenvolvimento Web.
+
+## Sobre o projeto
+
+O Memory Challenge é um jogo interativo desenvolvido com HTML5, CSS3 e JavaScript puro. O objetivo é encontrar todos os pares de cartas iguais no menor tempo possível.
+
+## Níveis de dificuldade
+
+O jogo possui três níveis:
+
+| Nível | Cartas | Pares |
+|---|---:|---:|
+| Iniciante | 12 | 6 |
+| Intermediário | 16 | 8 |
+| Especialista | 24 | 12 |
 
 ## Como jogar
 
-1. Abra o jogo no navegador e clique em **Iniciar partida**.
-2. Vire duas cartas por vez para revelar os símbolos.
-3. Quando os símbolos forem iguais, o par permanecerá visível.
-4. Quando forem diferentes, as cartas serão escondidas novamente.
-5. Encontre os seis pares para concluir o desafio.
-6. Use **Reiniciar** para começar outra partida sem atualizar a página.
+1. Abra o jogo no navegador.
+2. Escolha um nível de dificuldade.
+3. Clique em **Iniciar partida**.
+4. Vire duas cartas por vez para revelar os símbolos.
+5. Quando os símbolos forem iguais, o par permanecerá visível.
+6. Quando forem diferentes, as cartas serão escondidas novamente.
+7. Encontre todos os pares no menor tempo possível.
+8. Utilize **Reiniciar** para começar novamente sem atualizar a página.
 
-O jogo apresenta cronômetro, contador de jogadas e indicador de progresso.
+Durante a partida, o jogador acompanha:
 
-## Tecnologias
+- Cronômetro.
+- Quantidade de jogadas.
+- Pares encontrados.
+- Barra de progresso.
+
+## Sistema de recordes
+
+Cada nível possui seu próprio recorde, baseado no menor tempo de conclusão.
+
+Os recordes são armazenados no navegador utilizando o `localStorage`, permanecendo disponíveis nas próximas visitas realizadas no mesmo navegador e dispositivo.
+
+## Tecnologias utilizadas
 
 - HTML5
 - CSS3
 - JavaScript puro (sem bibliotecas ou frameworks)
 
-## Estrutura
+## Estrutura do projeto
 
 ```text
 memory-challenge/
@@ -31,16 +59,33 @@ memory-challenge/
 └── README.md
 ```
 
+## Como executar localmente
+
+1. Faça o download ou clone este repositório.
+2. Abra a pasta do projeto no Visual Studio Code.
+3. Abra o arquivo `index.html` em um navegador.
+4. Escolha um nível e inicie a partida.
+
+Não é necessário instalar dependências ou configurar um servidor backend.
+
 ## Publicação
 
-Depois de publicar pelo GitHub Pages, informe aqui o endereço do jogo:
+O projeto está configurado para publicação pelo GitHub Pages.
 
-`https://SEU-USUARIO.github.io/memory-challenge/`
+**Jogo:**
+
+https://valdineideschunk.github.io/memory-challenge/
+
+**Repositório:**
+
+https://github.com/ValdineideSchunk/memory-challenge
 
 ## Uso de inteligência artificial
 
-Foi utilizado o ChatGPT como apoio no planejamento da estrutura do projeto, na elaboração inicial de exemplos de HTML, CSS e JavaScript e na identificação de requisitos do trabalho. O código deve ser estudado, testado e compreendido pelo estudante, que é responsável pela versão final entregue.
+Foi utilizado o ChatGPT como ferramenta de apoio durante o planejamento e a implementação do projeto, auxiliando na organização da estrutura, na elaboração inicial de exemplos de HTML, CSS e JavaScript e na identificação de possíveis melhorias.
+
+O estudante é responsável pela revisão, pelos testes, pela compreensão e pela versão final do código apresentado.
 
 ## Autoria acadêmica
 
-Projeto individual desenvolvido para a avaliação C3 de Desenvolvimento Web.
+Projeto individual desenvolvido para a avaliação C3 da disciplina de Desenvolvimento Web.

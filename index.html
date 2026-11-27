@@ -1,15 +1,17 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Memory Challenge: um jogo da memória desenvolvido com HTML, CSS e JavaScript puro.">
+  <meta name="description" content="Memory Challenge: jogo da memória com três níveis de dificuldade.">
   <title>Memory Challenge</title>
   <link rel="stylesheet" href="css/estilo.css">
   <script src="js/jogo.js" defer></script>
 </head>
 <body>
   <main class="app">
+
     <header class="topo">
       <a class="marca" href="index.html" aria-label="Memory Challenge - início">
         <span class="marca-icone" aria-hidden="true">✦</span>
@@ -19,57 +21,193 @@
     </header>
 
     <section class="painel" aria-labelledby="titulo-principal">
+
       <div class="cabecalho-jogo">
         <div>
           <p class="sobretitulo">TREINE SUA MEMÓRIA</p>
           <h1 id="titulo-principal">Encontre os pares.</h1>
-          <p class="descricao" id="descricao-jogo">Vire as cartas, memorize os símbolos e encontre todas as combinações.</p>
+          <p class="descricao" id="descricao-jogo">
+            Escolha uma dificuldade, vire as cartas e encontre todas as combinações no menor tempo possível.
+          </p>
         </div>
-        <div class="status-partida" id="status-partida" aria-live="polite">Pronto para jogar?</div>
+        <div class="status-partida" id="status-partida" aria-live="polite">
+          Pronto para jogar?
+        </div>
       </div>
 
+      <!-- TELA INICIAL -->
       <section class="tela-inicial" id="tela-inicial">
+
         <div class="ilustracao-cartas" aria-hidden="true">
           <span class="carta-exemplo carta-esquerda">◆</span>
           <span class="carta-exemplo carta-centro">?</span>
           <span class="carta-exemplo carta-direita">●</span>
         </div>
-        <h2>Vamos começar?</h2>
-        <p>Você tem 6 pares para encontrar. Tente completar o desafio com o menor número de jogadas e no menor tempo possível.</p>
-        <ul class="regras">
-          <li><span>01</span> Vire duas cartas por vez.</li>
-          <li><span>02</span> Se forem iguais, o par ficará visível.</li>
-          <li><span>03</span> Encontre os 6 pares para vencer.</li>
-        </ul>
-        <button class="botao botao-principal" id="botao-iniciar" type="button">Iniciar partida <span aria-hidden="true">→</span></button>
+
+        <h2>Escolha seu desafio</h2>
+
+        <p>
+          Encontre todos os pares com o menor tempo possível.
+          Cada dificuldade possui seu próprio recorde.
+        </p>
+
+        <div class="seletor-nivel">
+          <label for="selecao-nivel">Nível de dificuldade</label>
+
+          <select id="selecao-nivel">
+            <option value="iniciante">Iniciante — 6 pares</option>
+            <option value="intermediario">Intermediário — 8 pares</option>
+            <option value="especialista">Especialista — 12 pares</option>
+          </select>
+        </div>
+
+        <div class="recordes-iniciais">
+          <h3>Seus recordes</h3>
+
+          <div class="lista-recordes">
+            <div class="recorde-item">
+              <span>Iniciante</span>
+              <strong id="recorde-iniciante">--:--</strong>
+            </div>
+
+            <div class="recorde-item">
+              <span>Intermediário</span>
+              <strong id="recorde-intermediario">--:--</strong>
+            </div>
+
+            <div class="recorde-item">
+              <span>Especialista</span>
+              <strong id="recorde-especialista">--:--</strong>
+            </div>
+          </div>
+        </div>
+
+        <button class="botao botao-principal" id="botao-iniciar" type="button">
+          Iniciar partida <span aria-hidden="true">→</span>
+        </button>
+
       </section>
 
+      <!-- TELA DA PARTIDA -->
       <section class="area-partida" id="area-partida" hidden>
-        <div class="indicadores" aria-label="Indicadores da partida">
-          <div class="indicador"><span class="indicador-icone">◷</span><div><span class="indicador-label">TEMPO</span><strong id="tempo">00:00</strong></div></div>
-          <div class="indicador"><span class="indicador-icone">↗</span><div><span class="indicador-label">JOGADAS</span><strong id="jogadas">0</strong></div></div>
-          <div class="indicador"><span class="indicador-icone">✦</span><div><span class="indicador-label">PARES</span><strong id="pares">0/6</strong></div></div>
+
+        <div class="nivel-partida">
+          <span id="nome-nivel-partida">Nível iniciante</span>
+          <span id="quantidade-pares">6 pares</span>
         </div>
-        <div class="progresso-cabecalho"><span>Seu progresso</span><span id="texto-progresso">0 de 6 pares</span></div>
-        <div class="barra-progresso" role="progressbar" aria-label="Progresso dos pares encontrados" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0" id="barra-progresso"><div id="progresso"></div></div>
-        <div class="tabuleiro" id="tabuleiro" aria-label="Tabuleiro do jogo da memória"></div>
-        <div class="acoes-partida"><span>Encontre todos os pares para concluir o desafio.</span><button class="botao-secundario" id="botao-reiniciar" type="button">↻ Reiniciar</button></div>
+
+        <div class="indicadores">
+
+          <div class="indicador">
+            <span class="indicador-icone">◷</span>
+            <div>
+              <span class="indicador-label">TEMPO</span>
+              <strong id="tempo">00:00</strong>
+            </div>
+          </div>
+
+          <div class="indicador">
+            <span class="indicador-icone">↗</span>
+            <div>
+              <span class="indicador-label">JOGADAS</span>
+              <strong id="jogadas">0</strong>
+            </div>
+          </div>
+
+          <div class="indicador">
+            <span class="indicador-icone">✦</span>
+            <div>
+              <span class="indicador-label">PARES</span>
+              <strong id="pares">0/6</strong>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="progresso-cabecalho">
+          <span>Seu progresso</span>
+          <span id="texto-progresso">0 de 6 pares</span>
+        </div>
+
+        <div
+          class="barra-progresso"
+          role="progressbar"
+          aria-label="Progresso dos pares encontrados"
+          aria-valuemin="0"
+          aria-valuemax="6"
+          aria-valuenow="0"
+          id="barra-progresso"
+        >
+          <div id="progresso"></div>
+        </div>
+
+        <div class="tabuleiro" id="tabuleiro" aria-label="Tabuleiro do jogo da memória">
+        </div>
+
+        <div class="acoes-partida">
+          <span>Encontre todos os pares para concluir o desafio.</span>
+
+          <button class="botao-secundario" id="botao-reiniciar" type="button">
+            ↻ Reiniciar
+          </button>
+        </div>
+
       </section>
 
+      <!-- TELA FINAL -->
       <section class="tela-final" id="tela-final" hidden aria-live="polite">
+
         <div class="icone-vitoria" aria-hidden="true">✦</div>
-        <p class="sobretitulo">DESAFIO CONCLUÍDO</p>
+
+        <p class="sobretitulo" id="mensagem-recorde">
+          DESAFIO CONCLUÍDO
+        </p>
+
         <h2>Parabéns! Você conseguiu.</h2>
-        <p class="mensagem-final">Todos os pares foram encontrados. Veja seu resultado:</p>
+
+        <p class="mensagem-final" id="descricao-resultado">
+          Todos os pares foram encontrados. Confira seu desempenho:
+        </p>
+
         <div class="resultado-final">
-          <div><span>Tempo</span><strong id="resultado-tempo">00:00</strong></div>
-          <div><span>Jogadas</span><strong id="resultado-jogadas">0</strong></div>
-          <div><span>Pares</span><strong>6/6</strong></div>
+
+          <div>
+            <span>Tempo</span>
+            <strong id="resultado-tempo">00:00</strong>
+          </div>
+
+          <div>
+            <span>Jogadas</span>
+            <strong id="resultado-jogadas">0</strong>
+          </div>
+
+          <div>
+            <span>Recorde</span>
+            <strong id="resultado-recorde">--:--</strong>
+          </div>
+
         </div>
-        <button class="botao botao-principal" id="botao-jogar-novamente" type="button">Jogar novamente <span aria-hidden="true">→</span></button>
+
+        <p class="nivel-resultado" id="nivel-resultado">
+          Nível iniciante
+        </p>
+
+        <button class="botao botao-principal" id="botao-jogar-novamente" type="button">
+          Jogar novamente <span aria-hidden="true">→</span>
+        </button>
+
+        <button class="botao-secundario botao-voltar" id="botao-voltar-inicio" type="button">
+          Voltar à tela inicial
+        </button>
+
       </section>
+
     </section>
-    <footer>Desenvolvido para a disciplina de Desenvolvimento Web · C3</footer>
+
+    <footer>
+      Desenvolvido para a disciplina de Desenvolvimento Web · C3
+    </footer>
+
   </main>
 </body>
 </html>
